@@ -63,3 +63,7 @@ func (d *mysql) SqlType(f interface{}, size int) string {
 func (d *mysql) KeywordAutoIncrement() string {
 	return "AUTO_INCREMENT"
 }
+
+func (d *mysql) DropIndexSql(table_name, name string) string {
+	return fmt.Sprintf("DROP INDEX %v on %v", d.Quote(name), d.Quote(table_name))
+}

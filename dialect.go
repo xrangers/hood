@@ -114,10 +114,10 @@ type Dialect interface {
 	CreateIndexSql(name, table string, unique bool, columns ...string) string
 
 	// DropIndex drops the index.
-	DropIndex(hood *Hood, name string) error
+	DropIndex(hood *Hood, table_name string, name string) error
 
 	// DropIndexSql returns the sql for dropping the index.
-	DropIndexSql(name string) string
+	DropIndexSql(table_name, name string) string
 
 	// KeywordNotNull returns the dialect specific keyword for 'NOT NULL'.
 	KeywordNotNull() string

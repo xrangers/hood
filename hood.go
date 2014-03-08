@@ -1241,7 +1241,7 @@ func (hood *Hood) DropIndex(table interface{}, name string) error {
 	if hood.dryRun {
 		return nil
 	}
-	return hood.Dialect.DropIndex(hood, name)
+	return hood.Dialect.DropIndex(hood, tn, name)
 }
 
 func (hood *Hood) substituteMarkers(query string) string {

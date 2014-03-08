@@ -410,12 +410,12 @@ func (d *base) CreateIndexSql(name, table string, unique bool, columns ...string
 	return strings.Join(a, " ")
 }
 
-func (d *base) DropIndex(hood *Hood, name string) error {
-	_, err := hood.Exec(d.Dialect.DropIndexSql(name))
+func (d *base) DropIndex(hood *Hood, table_name string, name string) error {
+	_, err := hood.Exec(d.Dialect.DropIndexSql(table_name, name))
 	return err
 }
 
-func (d *base) DropIndexSql(name string) string {
+func (d *base) DropIndexSql(table_name, name string) string {
 	return fmt.Sprintf("DROP INDEX %v", d.Dialect.Quote(name))
 }
 
