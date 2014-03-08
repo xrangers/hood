@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"time"
+	//_ "github.com/ziutek/mymysql/godrv"
 )
 
 func init() {
