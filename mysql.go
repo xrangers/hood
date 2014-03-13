@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"time"
-	//_ "github.com/ziutek/mymysql/godrv"
+_   "github.com/ziutek/mymysql/godrv"
 )
 
 func init() {
@@ -36,7 +36,7 @@ func (d *mysql) ParseBool(value reflect.Value) bool {
 func (d *mysql) SqlType(f interface{}, size int) string {
 	switch f.(type) {
 	case Id:
-		return "bigint"
+		return "int"
 	case time.Time, Created, Updated:
 		return "timestamp"
 	case bool:
@@ -56,7 +56,7 @@ func (d *mysql) SqlType(f interface{}, size int) string {
 		if size > 0 && size < 65532 {
 			return fmt.Sprintf("varchar(%d)", size)
 		}
-		return "longtext"
+		return "text"
 	}
 	panic("invalid sql type")
 }
@@ -67,4 +67,9 @@ func (d *mysql) KeywordAutoIncrement() string {
 
 func (d *mysql) DropIndexSql(table_name, name string) string {
 	return fmt.Sprintf("DROP INDEX %v on %v", d.Quote(name), d.Quote(table_name))
+}
+
+func (d *mysql) CreateTable(hood *Hood, model *Model) error {
+	_, err := hood.Exec(d.CreateTableSql(model, false) + " CHARSET = 'utf8'")
+	return err
 }
