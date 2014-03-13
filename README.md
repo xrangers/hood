@@ -1,3 +1,9 @@
+## FYI
+This is just a MySQL Patch for [eaigner/hood](https://github.com/eaigner/hood).Let us known if you have any questions.
+
+- - -
+
+
 If you are looking for something more lightweight and flexible, have a look at [jet](http://github.com/eaigner/jet)
 
 For questions, suggestions and general topics visit the [group](https://groups.google.com/forum/#!forum/golang-hood).
@@ -44,11 +50,11 @@ You can find the documentation over at [GoDoc](http://godoc.org/github.com/eaign
 If the dialect is registered, you can open the database directly using
 
     hd, err := hood.Open("postgres", "user=<username> dbname=<database>")
-    
+
 or you can pass an existing database and dialect to `hood.New(*sql.DB, hood.Dialect)`
 
     hd := hood.New(db, NewPostgres())
-	
+
 ## Schemas
 
 Schemas can be declared using the following syntax (only for demonstration purposes, would not produce valid SQL since it has 2 primary keys)
@@ -112,6 +118,7 @@ To use migrations, you first have to install the `hood` tool. To do that run the
 
     go get github.com/eaigner/hood
     cd $GOPATH/src/github.com/eaigner/hood
+    cp install.sample.sh install.sh
     ./install.sh
 
 Assuming you have your `$GOPATH/bin` directory in your `PATH`, you can now invoke the hood tool with `hood`.
@@ -206,7 +213,7 @@ Besides the `sql:` struct tag, you can specify a `validate:` tag for model valid
 
 - `presence` validates that a field is set
 - `len(min:max)` validates that a `string` field’s length lies within the specified range
-	- `len(min:)` validates that it has the specified min length, 
+	- `len(min:)` validates that it has the specified min length,
 	- `len(:max)` or max length
 - `range(min:max)` validates that an `int` value lies in the specific range
 	- `range(min:)` validates that it has the specified min value,
