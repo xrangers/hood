@@ -2,6 +2,7 @@ package hood
 
 import (
 	"fmt"
+	_ "github.com/ziutek/mymysql/godrv"
 	"reflect"
 	"strings"
 	"time"
