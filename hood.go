@@ -184,6 +184,12 @@ func (field *ModelField) NotNull() bool {
 	return ok
 }
 
+// NotNull tests if the field is declared as NOT NULL
+func (field *ModelField) AutoIncr() bool {
+	_, ok := field.SqlTags["autoincr"]
+	return ok
+}
+
 // Default returns the default value for the field
 func (field *ModelField) Default() string {
 	return field.SqlTags["default"]
