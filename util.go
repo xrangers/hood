@@ -49,11 +49,9 @@ func columnsMarkersAndValuesForModel(dialect Dialect, model *Model, markerPos *i
 	markers := make([]string, 0, len(columns))
 	values := make([]interface{}, 0, len(columns))
 	for _, column := range model.Fields {
-		if !column.PrimaryKey() {
-			columns = append(columns, column.Name)
-			markers = append(markers, dialect.NextMarker(markerPos))
-			values = append(values, column.Value)
-		}
+		columns = append(columns, column.Name)
+		markers = append(markers, dialect.NextMarker(markerPos))
+		values = append(values, column.Value)
 	}
 	return columns, markers, values
 }
