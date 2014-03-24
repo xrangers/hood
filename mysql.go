@@ -74,6 +74,7 @@ func (d *mysql) DropIndexSql(table_name, name string) string {
 func (d *mysql) CreateTable(hood *Hood, model *Model) error {
 	_, err := hood.Exec(d.CreateTableSql(model, false) + " CHARSET = 'utf8'")
 	return err
+}
 
 func (d *mysql) CreateTableSql(model *Model, ifNotExists bool) string {
 	a := []string{"CREATE TABLE "}
