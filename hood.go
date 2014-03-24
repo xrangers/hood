@@ -868,6 +868,56 @@ func callModelMethod(f interface{}, methodName string, isPrefix bool) error {
 	return nil
 }
 
+// INSERT
+
+func (hood *Hood) Insert(f interface{}) (Id, error) {
+	var (
+		id  Id = -1
+		err error
+	)
+	model, err := interfaceToModel(f)
+	if err != nil {
+		return id, err
+	}
+	err = model.Validate()
+	if err != nil {
+		return id, err
+	}
+	if model.Pk == nil {
+		panic("no primary key field")
+	}
+	err = callModelMethod(f, "BeforeInsert", false)
+	if err != nil {
+		return id, err
+	}
+	now := time.Now()
+	for _, f := range model.Fields {
+		switch f.Value.(type) {
+		case Created, Updated:
+			f.Value = now
+		}
+	}
+	id, err = hood.Dialect.Insert(hood, model)
+	if err == nil {
+		err = callModelMethod(f, "AfterInsert", false)
+	}
+
+	if id != -1 {
+		// update model id after save
+		structValue := reflect.Indirect(reflect.ValueOf(f))
+		for i := 0; i < structValue.NumField(); i++ {
+			field := structValue.Field(i)
+			switch field.Interface().(type) {
+			case Id:
+				field.SetInt(int64(id))
+			case Created:
+				field.Set(reflect.ValueOf(Created{now}))
+			}
+		}
+	}
+	return id, err
+}
+
 // Save performs an INSERT, or UPDATE if the passed structs Id is set.
 func (hood *Hood) Save(f interface{}) (Id, error) {
 	var (
