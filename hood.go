@@ -765,6 +765,9 @@ func (hood *Hood) FindSql(out interface{}, query string, args ...interface{}) er
 
 // Exec executes a raw sql query.
 func (hood *Hood) Exec(query string, args ...interface{}) (sql.Result, error) {
+	if hood.dryRun {
+		return nil, nil
+	}
 	hood.mutex.Lock()
 	defer hood.mutex.Unlock()
 	defer hood.Reset()
