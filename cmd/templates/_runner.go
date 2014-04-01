@@ -56,7 +56,7 @@ func init() {
 type M struct{}
 
 type Migrations struct {
-	Id      hood.Id
+	Id      hood.Id `sql:"pk,autoincr"`
 	Current int
 }
 
