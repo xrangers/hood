@@ -46,11 +46,11 @@ func (d *postgres) SqlType(f interface{}, size int) string {
 	panic("invalid sql type")
 }
 
-func (d *postgres) Insert(hood *Hood, model *Model) (Id, error) {
+func (d *postgres) Insert(hood *Hood, model *Model) (interface{}, error) {
 	sql, args := d.Dialect.InsertSql(model)
 	var id int64
 	err := hood.QueryRow(sql, args...).Scan(&id)
-	return Id(id), err
+	return id, err
 }
 
 func (d *postgres) InsertSql(model *Model) (string, []interface{}) {

@@ -873,9 +873,9 @@ func callModelMethod(f interface{}, methodName string, isPrefix bool) error {
 
 // INSERT
 
-func (hood *Hood) Insert(f interface{}) (Id, error) {
+func (hood *Hood) Insert(f interface{}) (interface{}, error) {
 	var (
-		id  Id = -1
+		id  int64 = -1
 		err error
 	)
 	model, err := interfaceToModel(f)
@@ -900,7 +900,8 @@ func (hood *Hood) Insert(f interface{}) (Id, error) {
 			f.Value = now
 		}
 	}
-	id, err = hood.Dialect.Insert(hood, model)
+	ifd, err := hood.Dialect.Insert(hood, model)
+	id, _ = ifd.(int64)
 	if err == nil {
 		err = callModelMethod(f, "AfterInsert", false)
 	}
@@ -911,8 +912,6 @@ func (hood *Hood) Insert(f interface{}) (Id, error) {
 		for i := 0; i < structValue.NumField(); i++ {
 			field := structValue.Field(i)
 			switch field.Interface().(type) {
-			case Id:
-				field.SetInt(int64(id))
 			case Created:
 				field.Set(reflect.ValueOf(Created{now}))
 			}
@@ -922,10 +921,11 @@ func (hood *Hood) Insert(f interface{}) (Id, error) {
 }
 
 // Save performs an INSERT, or UPDATE if the passed structs Id is set.
-func (hood *Hood) Save(f interface{}) (Id, error) {
+func (hood *Hood) Save(f interface{}) (interface{}, error) {
 	var (
-		id  Id = -1
+		id  int64 = -1
 		err error
+		ifd interface{}
 	)
 	model, err := interfaceToModel(f)
 	if err != nil {
@@ -955,7 +955,7 @@ func (hood *Hood) Save(f interface{}) (Id, error) {
 				f.Value = now
 			}
 		}
-		id, err = hood.Dialect.Update(hood, model)
+		ifd, err = hood.Dialect.Update(hood, model)
 		if err == nil {
 			err = callModelMethod(f, "AfterUpdate", false)
 		}
@@ -970,7 +970,8 @@ func (hood *Hood) Save(f interface{}) (Id, error) {
 				f.Value = now
 			}
 		}
-		id, err = hood.Dialect.Insert(hood, model)
+		ifd, err = hood.Dialect.Insert(hood, model)
+		id, _ = ifd.(int64)
 		if err == nil {
 			err = callModelMethod(f, "AfterInsert", false)
 		}
@@ -978,14 +979,12 @@ func (hood *Hood) Save(f interface{}) (Id, error) {
 	if err == nil {
 		err = callModelMethod(f, "AfterSave", false)
 	}
-	if id != -1 {
+	if id != -1 || ifd != nil {
 		// update model id after save
 		structValue := reflect.Indirect(reflect.ValueOf(f))
 		for i := 0; i < structValue.NumField(); i++ {
 			field := structValue.Field(i)
 			switch field.Interface().(type) {
-			case Id:
-				field.SetInt(int64(id))
 			case Updated:
 				field.Set(reflect.ValueOf(Updated{now}))
 			case Created:
@@ -995,10 +994,10 @@ func (hood *Hood) Save(f interface{}) (Id, error) {
 			}
 		}
 	}
-	return id, err
+	return ifd, err
 }
 
-func (hood *Hood) doAll(f interface{}, doFunc func(f2 interface{}) (Id, error)) ([]Id, error) {
+func (hood *Hood) doAll(f interface{}, doFunc func(f2 interface{}) (interface{}, error)) ([]interface{}, error) {
 	panicMsg := "expected pointer to struct slice *[]struct"
 	if reflect.TypeOf(f).Kind() != reflect.Ptr {
 		panic(panicMsg)
@@ -1008,7 +1007,7 @@ func (hood *Hood) doAll(f interface{}, doFunc func(f2 interface{}) (Id, error)) 
 	}
 	sliceValue := reflect.ValueOf(f).Elem()
 	sliceLen := sliceValue.Len()
-	ids := make([]Id, 0, sliceLen)
+	ids := make([]interface{}, 0, sliceLen)
 	for i := 0; i < sliceLen; i++ {
 		id, err := doFunc(sliceValue.Index(i).Addr().Interface())
 		if err != nil {
@@ -1020,14 +1019,14 @@ func (hood *Hood) doAll(f interface{}, doFunc func(f2 interface{}) (Id, error)) 
 }
 
 // SaveAll performs an INSERT or UPDATE on a slice of structs.
-func (hood *Hood) SaveAll(f interface{}) ([]Id, error) {
-	return hood.doAll(f, func(f2 interface{}) (Id, error) {
+func (hood *Hood) SaveAll(f interface{}) ([]interface{}, error) {
+	return hood.doAll(f, func(f2 interface{}) (interface{}, error) {
 		return hood.Save(f2)
 	})
 }
 
 // Delete deletes the row matching the specified structs Id.
-func (hood *Hood) Delete(f interface{}) (Id, error) {
+func (hood *Hood) Delete(f interface{}) (interface{}, error) {
 	model, err := interfaceToModel(f)
 	if err != nil {
 		return -1, err
@@ -1047,8 +1046,8 @@ func (hood *Hood) Delete(f interface{}) (Id, error) {
 }
 
 // DeleteAll deletes the rows matching the specified struct slice Ids.
-func (hood *Hood) DeleteAll(f interface{}) ([]Id, error) {
-	return hood.doAll(f, func(f2 interface{}) (Id, error) {
+func (hood *Hood) DeleteAll(f interface{}) ([]interface{}, error) {
+	return hood.doAll(f, func(f2 interface{}) (interface{}, error) {
 		return hood.Delete(f2)
 	})
 }

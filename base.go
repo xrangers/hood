@@ -171,7 +171,7 @@ func (d *base) QuerySql(hood *Hood) (string, []interface{}) {
 	return hood.substituteMarkers(strings.Join(query, " ")), args
 }
 
-func (d *base) Insert(hood *Hood, model *Model) (Id, error) {
+func (d *base) Insert(hood *Hood, model *Model) (interface{}, error) {
 	sql, args := d.Dialect.InsertSql(model)
 	result, err := hood.Exec(sql, args...)
 	if err != nil {
@@ -181,7 +181,7 @@ func (d *base) Insert(hood *Hood, model *Model) (Id, error) {
 	if err != nil {
 		return -1, err
 	}
-	return Id(id), nil
+	return id, nil
 }
 
 func (d *base) InsertSql(model *Model) (string, []interface{}) {
@@ -200,13 +200,13 @@ func (d *base) InsertSql(model *Model) (string, []interface{}) {
 	return sql, values
 }
 
-func (d *base) Update(hood *Hood, model *Model) (Id, error) {
+func (d *base) Update(hood *Hood, model *Model) (interface{}, error) {
 	sql, args := d.Dialect.UpdateSql(model)
 	_, err := hood.Exec(sql, args...)
 	if err != nil {
 		return -1, err
 	}
-	return model.Pk.Value.(Id), nil
+	return model.Pk.Value, nil
 }
 
 func (d *base) UpdateSql(model *Model) (string, []interface{}) {
@@ -227,10 +227,10 @@ func (d *base) UpdateSql(model *Model) (string, []interface{}) {
 	return sql, values
 }
 
-func (d *base) Delete(hood *Hood, model *Model) (Id, error) {
+func (d *base) Delete(hood *Hood, model *Model) (interface{}, error) {
 	sql, args := d.Dialect.DeleteSql(model)
 	_, err := hood.Exec(sql, args...)
-	return args[0].(Id), err
+	return args[0], err
 }
 
 func (d *base) DeleteSql(model *Model) (string, []interface{}) {

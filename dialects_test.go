@@ -414,7 +414,7 @@ func DoTestSaveDeleteAllAndHooks(t *testing.T, info dialectInfo) {
 		t.Fatal("wrong id", x)
 	}
 
-	hd.SaveAll(&models) // force update for hooks test 
+	hd.SaveAll(&models) // force update for hooks test
 
 	_, err = hd.DeleteAll(&models)
 	if err != nil {

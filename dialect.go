@@ -35,20 +35,20 @@ type Dialect interface {
 	QuerySql(hood *Hood) (sql string, args []interface{})
 
 	// Insert inserts the values in model and returns the inserted rows Id.
-	Insert(hood *Hood, model *Model) (Id, error)
+	Insert(hood *Hood, model *Model) (interface{}, error)
 
 	// InsertSql returns the sql for inserting the passed model.
 	InsertSql(model *Model) (sql string, args []interface{})
 
 	// Update updates the values in the specified model and returns the
 	// updated rows Id.
-	Update(hood *Hood, model *Model) (Id, error)
+	Update(hood *Hood, model *Model) (interface{}, error)
 
 	// UpdateSql returns the sql for updating the specified model.
 	UpdateSql(model *Model) (string, []interface{})
 
 	// Delete drops the row matching the primary key of model and returns the affected Id.
-	Delete(hood *Hood, model *Model) (Id, error)
+	Delete(hood *Hood, model *Model) (interface{}, error)
 
 	// DeleteSql returns the sql for deleting the row matching model's primary key.
 	DeleteSql(model *Model) (string, []interface{})
